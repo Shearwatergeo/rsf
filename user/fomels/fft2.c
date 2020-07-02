@@ -145,7 +145,7 @@ void fft2_allocate(sf_complex *inp /* [nk*n2] */)
 			  (fftwf_complex *) inp,
 			  FFTW_FORWARD, FFTW_MEASURE):
 	fftwf_plan_dft_r2c_2d(n2,n1,
-			      ff[0], (fftwf_complex *) out,
+			      ff[0], (fftwf_complex *) inp,
 			      FFTW_MEASURE);
     if (NULL == cfg) sf_error("FFTW failure.");
     icfg = cmplx? 
