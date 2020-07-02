@@ -1,4 +1,4 @@
-# Starting point based on https://github.com/ROCmSoftwarePlatform/hipBLAS/blob/develop/docker/dockerfile-build-centos
+# Starting point based on https://github.com/ROCmSoftwarePlatform/hipBLAS/blob/develop/docker/dockerfile-build-centos (July 2020)
 ARG base_image=centos:centos7
 
 FROM ${base_image}
@@ -14,8 +14,6 @@ RUN yum install -y\
     make \
     gcc-c++ \
     gcc-gfortran \
-    gtest-devel \
-    gtest \
     pkgconfig \
     python27 \
     libcxx-devel \
@@ -26,11 +24,17 @@ RUN yum install -y\
     wget \
     which \
     unzip \
+    nano \
     bzip2
 
 # Seems to work better when devtoolset-7 is installed separately
 RUN yum install -y \
     devtoolset-7
+
+# Env.sh assumes man-pages works, but as per https://unix.stackexchange.com/questions/252530/how-to-install-man-pages-on-centos (July 2020),
+# we need to fix the CentOS base image to use them.
+RUN sed -i -e '/tsflags=nodocs/s/^/#/' /etc/yum.conf \
+  && yum -y install man
 
 RUN echo '#!/bin/bash' | tee /etc/profile.d/devtoolset7.sh \
   && echo 'source scl_source enable devtoolset-7' >> /etc/profile.d/devtoolset7.sh \
