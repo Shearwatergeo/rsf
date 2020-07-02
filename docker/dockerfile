@@ -1,0 +1,65 @@
+# Starting point based on https://github.com/ROCmSoftwarePlatform/hipBLAS/blob/develop/docker/dockerfile-build-centos
+ARG base_image=centos:centos7
+
+FROM ${base_image}
+
+# Basic libraries
+RUN yum install -y\
+    sudo \
+    scl-utils \
+    centos-release-scl \
+    ca-certificates \
+    git \
+    cmake3 \
+    make \
+    gcc-c++ \
+    gcc-gfortran \
+    gtest-devel \
+    gtest \
+    pkgconfig \
+    python27 \
+    libcxx-devel \
+    boost-devel \
+    numactl-libs \
+    rpm-build \
+    deltarpm \
+    wget \
+    which \
+    unzip \
+    bzip2
+
+# Seems to work better when devtoolset-7 is installed separately
+RUN yum install -y \
+    devtoolset-7
+
+RUN echo '#!/bin/bash' | tee /etc/profile.d/devtoolset7.sh \
+  && echo 'source scl_source enable devtoolset-7' >> /etc/profile.d/devtoolset7.sh \
+  && chmod +x /etc/profile.d/devtoolset7.sh
+
+# Upgrade Python using Miniconda
+ARG anaconda_version=4.8.3
+RUN cd /tmp/ && wget https://repo.anaconda.com/miniconda/Miniconda2-py27_${anaconda_version}-Linux-x86_64.sh \
+  && bash /tmp/Miniconda2-py27_${anaconda_version}-Linux-x86_64.sh -b -p /opt/anaconda
+
+RUN ln -s /opt/anaconda/bin/python /usr/local/bin/anaconda \
+  && echo "export PATH=/opt/anaconda/bin:$PATH" >> /etc/profile.d/anaconda.sh \
+  && chmod +x /etc/profile.d/anaconda.sh
+
+RUN /opt/anaconda/bin/conda install -c anaconda numpy scons matplotlib swig
+
+# Following through configure.py. The following packages are listed for rhel
+RUN yum install -y \
+    libXaw-devel \
+    netpbm-devel \
+    libtiff-devel \
+    gd-devel \
+    plplot-devel \
+    ffmpeg-devel \
+    freeglut-devel \
+    blas-devel \
+    atlas-devel \
+    lapack-devel \
+    openmpi-devel \
+    fftw-devel \
+    suitesparse-devel \
+    java-1.7.0-openjdk
