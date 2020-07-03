@@ -10,6 +10,6 @@ echo '    export PATH=/opt/anaconda/bin:$PATH'
 echo "    ./configure --prefix=/nfs/rsf/build_docker"
 echo "    make"
 echo "    make install"
-echo "    source /nfs/rsf/build_docker/share/madagascar/etc/env.sh
+echo "    source /nfs/rsf/build_docker/share/madagascar/etc/env.sh"
 docker run --user $(id -u):$(id -g) -v $(pwd):/nfs/rsf -ti madagascar
 #docker run -ti madagascar
