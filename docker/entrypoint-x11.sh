@@ -4,11 +4,10 @@ set -x
 echo $_USER
 echo $_UID
 echo $_GID
-echo $_GROUP
 echo $_PASSWD_HASH
 
 
-groupadd --gid $_GID $_GROUP
+groupadd --gid $_GID fakename
 adduser --uid $_UID --gid $_GID -G wheel --password $_PASSWD_HASH $_USER
 
 ssh-keygen -f /etc/ssh/ssh_host_rsa_key -N '' -t rsa
