@@ -1,0 +1,33 @@
+# Follows work done by Daniel Guerra
+# https://github.com/danielguerra69/ubuntu-xrdp/blob/master/Dockerfile (July 2020)
+# as well as several other sites
+# https://serverfault.com/questions/824975/failed-to-get-d-bus-connection-operation-not-permitted (July 2020)
+# https://github.com/Komodo/KomodoEdit/issues/2554 (July 2020)
+FROM madagascar
+
+ENV container docker
+RUN yum -y update; yum clean all
+RUN yum -y install systemd; yum clean all; \
+(cd /lib/systemd/system/sysinit.target.wants/; for i in *; do [ $i == systemd-tmpfiles-setup.service ] || rm -f $i; done); \
+rm -f /lib/systemd/system/multi-user.target.wants/*;\
+rm -f /etc/systemd/system/*.wants/*;\
+rm -f /lib/systemd/system/local-fs.target.wants/*; \
+rm -f /lib/systemd/system/sockets.target.wants/*udev*; \
+rm -f /lib/systemd/system/sockets.target.wants/*initctl*; \
+rm -f /lib/systemd/system/basic.target.wants/*;\
+rm -f /lib/systemd/system/anaconda.target.wants/*;
+VOLUME [ "/sys/fs/cgroup" ]
+
+RUN yum install -y sudo && chmod 640 /etc/sudoers && echo "%wheel        ALL=(ALL)       NOPASSWD: ALL" >> /etc/sudoers && chmod 440 /etc/sudoers
+
+# Add SSH
+RUN yum install -y openssh-server \
+    &&  systemctl enable sshd.service
+EXPOSE 22
+
+# Setup X11 and ensure Qt is configured
+RUN yum install -y xorg-x11-server-Xorg xorg-x11-xauth xorg-x11-apps dbus-X11
+
+COPY entrypoint-x11.sh /opt/entrypoint.sh
+RUN chmod +x /opt/entrypoint.sh
+ENTRYPOINT ["/opt/entrypoint.sh"]
