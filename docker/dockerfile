@@ -40,6 +40,10 @@ RUN echo '#!/bin/bash' | tee /etc/profile.d/devtoolset7.sh \
   && echo 'source scl_source enable devtoolset-7' >> /etc/profile.d/devtoolset7.sh \
   && chmod +x /etc/profile.d/devtoolset7.sh
 
+RUN echo '#!/bin/bash' | tee /etc/profile.d/mpich.sh \
+  && echo 'module load mpi/openmpi-x86_64' >> /etc/profile.d/mpich.sh \
+  && chmod +x /etc/profile.d/mpich.sh
+
 # Upgrade Python using Miniconda
 ARG anaconda_version=4.8.3
 RUN cd /tmp/ && wget https://repo.anaconda.com/miniconda/Miniconda2-py27_${anaconda_version}-Linux-x86_64.sh \
